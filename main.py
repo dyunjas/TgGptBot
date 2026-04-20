@@ -1,5 +1,6 @@
 import asyncio
 
+from bot import close_chat_service, router as chat_router
 from backend.core.loader import setup_bot, shutdown_bot
 from backend.core.logger_config import logger
 from backend.database.session import check_connection, init_db
@@ -15,10 +16,12 @@ async def main() -> None:
         return
 
     await init_db()
+    dp.include_router(chat_router)
 
     try:
         await dp.start_polling(bot)
     finally:
+        await close_chat_service()
         await shutdown_bot(bot)
 
 

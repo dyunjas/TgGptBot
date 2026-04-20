@@ -14,9 +14,12 @@ class Settings(BaseSettings):
     DB_MAX_OVERFLOW: int = 0
     DB_POOL_TIMEOUT: int = 20
     DB_POOL_RECYCLE: int = 1800
-    GPT_API_TOKEN: str
-    OPENAI_MODEL: str = "gpt-4.1-mini"
-    OPENAI_SYSTEM_PROMPT: str = "You are a helpful assistant. Answer briefly and clearly."
+    TIMEWEB_API_KEY: str
+    TIMEWEB_AGENT_ACCESS_ID: str
+    TIMEWEB_BASE_URL: str = "https://agent.timeweb.cloud"
+    TIMEWEB_PROXY_SOURCE: str = "telegram-bot"
+    TIMEWEB_MODEL: str = "deepseek-chat"
+    TIMEWEB_SYSTEM_PROMPT: str = "You are a helpful assistant. Answer briefly and clearly."
 
     class Config:
         env_file = ".env"

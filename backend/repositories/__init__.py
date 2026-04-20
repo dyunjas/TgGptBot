@@ -1,3 +1,3 @@
-from backend.repositories.chat_repository import ChatRepository, UserChatsWithMessages
+from backend.repositories.chat_repository import ChatRepository, PaginatedResult
 
-__all__ = ["ChatRepository", "UserChatsWithMessages"]
+__all__ = ["ChatRepository", "PaginatedResult"]

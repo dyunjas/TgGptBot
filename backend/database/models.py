@@ -43,11 +43,17 @@ class User(Base):
 
     chats: Mapped[list["Chat"]] = relationship(
         back_populates="user",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        foreign_keys="Chat.user_id",
     )
     messages: Mapped[list["ChatMessage"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
+    )
+    chat_state: Mapped[Optional["UserChatState"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False,
     )
 
 
@@ -70,11 +76,43 @@ class Chat(Base):
         onupdate=utc_now
     )
 
-    user: Mapped["User"] = relationship(back_populates="chats")
+    user: Mapped["User"] = relationship(back_populates="chats", foreign_keys=[user_id])
     messages: Mapped[list["ChatMessage"]] = relationship(
         back_populates="chat",
         cascade="all, delete-orphan",
         order_by="ChatMessage.created_at"
+    )
+    active_for_states: Mapped[list["UserChatState"]] = relationship(
+        back_populates="active_chat",
+        foreign_keys="UserChatState.active_chat_id",
+    )
+
+
+class UserChatState(Base):
+    __tablename__ = "user_chat_states"
+    __table_args__ = (UniqueConstraint("user_id", name="uq_user_chat_states_user_id"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    active_chat_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("chats.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+        onupdate=utc_now,
+    )
+
+    user: Mapped["User"] = relationship(back_populates="chat_state")
+    active_chat: Mapped[Optional["Chat"]] = relationship(
+        back_populates="active_for_states",
+        foreign_keys=[active_chat_id],
     )
 
 
